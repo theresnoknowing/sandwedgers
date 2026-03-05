@@ -1,0 +1,1169 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Sandwedgers</title>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700;900&family=DM+Sans:wght@300;400;500;600&family=Inter:wght@700;800;900&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --green-dark:  #1a3a2a;
+      --green-mid:   #2d6a4f;
+      --green-light: #52b788;
+      --gold:        #c9a84c;
+      --gold-light:  #e8c97a;
+      --cream:       #f8f4ec;
+      --white:       #ffffff;
+      --text-dark:   #1c1c1c;
+      --text-mid:    #444444;
+      --shadow-lg:   0 20px 60px rgba(0,0,0,0.25);
+      --shadow-md:   0 8px 30px rgba(0,0,0,0.15);
+      --shadow-sm:   0 4px 15px rgba(0,0,0,0.10);
+      --radius-lg:   16px;
+      --radius-md:   10px;
+      --transition:  all 0.35s cubic-bezier(0.4,0,0.2,1);
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: 'DM Sans', sans-serif;
+      background: var(--cream);
+      color: var(--text-dark);
+      overflow-x: hidden;
+    }
+
+    /* ── NAV ── */
+    nav {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      z-index: 1000;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 2.5rem;
+      height: 70px;
+      background: rgba(26,58,42,0.92);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border-bottom: 1px solid rgba(201,168,76,0.3);
+      transition: var(--transition);
+    }
+    nav.scrolled {
+      background: rgba(26,58,42,0.98);
+      box-shadow: var(--shadow-md);
+    }
+    .nav-logo {
+      display: flex;
+      align-items: center;
+      gap: 0;
+      text-decoration: none;
+    }
+    .nav-logo-img {
+      width: 52px; height: 52px;
+      border-radius: 50%;
+      object-fit: cover;
+      border: 2px solid var(--gold);
+      flex-shrink: 0;
+    }
+
+    .nav-links { display: flex; gap: 2.5rem; list-style: none; }
+    .nav-links a {
+      color: var(--white);
+      text-decoration: none;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 0.9rem;
+      font-weight: 500;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      position: relative;
+      padding-bottom: 4px;
+      transition: var(--transition);
+    }
+    .nav-links a::after {
+      content: '';
+      position: absolute;
+      bottom: 0; left: 0;
+      width: 0; height: 2px;
+      background: var(--gold);
+      transition: var(--transition);
+    }
+    .nav-links a:hover { color: var(--gold); }
+    .nav-links a:hover::after { width: 100%; }
+
+    .hamburger {
+      display: none;
+      flex-direction: column;
+      gap: 5px;
+      cursor: pointer;
+      padding: 6px;
+      background: none;
+      border: none;
+      z-index: 1100;
+    }
+    .hamburger span {
+      display: block; width: 26px; height: 2px;
+      background: var(--white); border-radius: 2px;
+      transition: var(--transition);
+    }
+    .hamburger.open span:nth-child(1) { transform: translateY(7px) rotate(45deg); }
+    .hamburger.open span:nth-child(2) { opacity: 0; transform: scaleX(0); }
+    .hamburger.open span:nth-child(3) { transform: translateY(-7px) rotate(-45deg); }
+
+    .mobile-menu {
+      display: none;
+      position: fixed; inset: 0;
+      background: rgba(26,58,42,0.98);
+      z-index: 999;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 2.5rem;
+    }
+    .mobile-menu.open { display: flex; }
+    .mobile-menu a {
+      color: var(--white);
+      text-decoration: none;
+      font-family: 'Playfair Display', serif;
+      font-size: 2rem;
+      font-weight: 700;
+      transition: var(--transition);
+    }
+    .mobile-menu a:hover { color: var(--gold); }
+
+    /* ── HERO ── */
+    #home {
+      position: relative;
+      height: 100vh; min-height: 600px;
+      display: flex; align-items: center; justify-content: center;
+      overflow: hidden;
+    }
+    .hero-bg {
+      position: absolute; inset: 0;
+      background-size: cover;
+      background-position: center;
+      opacity: 0.45;
+      transform: scale(1.05);
+      transition: transform 8s ease;
+    }
+    #home:hover .hero-bg { transform: scale(1.0); }
+    .hero-overlay {
+      position: absolute; inset: 0;
+      background: linear-gradient(160deg, rgba(26,58,42,0.75) 0%, rgba(26,58,42,0.55) 50%, rgba(0,0,0,0.4) 100%);
+    }
+    .hero-content {
+      position: relative; z-index: 2;
+      text-align: center; padding: 2rem;
+      max-width: 800px;
+    }
+    .hero-badge {
+      display: inline-block;
+      background: rgba(201,168,76,0.2);
+      border: 1px solid var(--gold);
+      color: var(--gold-light);
+      font-family: 'DM Sans', sans-serif;
+      font-size: 0.72rem; font-weight: 600;
+      letter-spacing: 0.22em; text-transform: uppercase;
+      padding: 0.4rem 1.2rem; border-radius: 50px;
+      margin-bottom: 1.5rem;
+    }
+    .hero-title {
+      font-family: 'Inter', sans-serif;
+      font-size: clamp(2.6rem,6.5vw,5.2rem);
+      font-weight: 900; color: var(--white);
+      line-height: 1.05; margin-bottom: 1rem;
+      letter-spacing: -0.04em;
+      text-shadow: 0 4px 20px rgba(0,0,0,0.5);
+    }
+    .hero-title em { color: var(--gold); font-style: normal; }
+    .hero-subtitle {
+      font-family: 'DM Sans', sans-serif;
+      font-size: clamp(1rem,2.5vw,1.25rem);
+      color: rgba(255,255,255,0.85);
+      font-style: italic;
+      font-weight: 300;
+      letter-spacing: 0.1em;
+      margin-bottom: 2.5rem;
+    }
+    .hero-divider {
+      width: 80px; height: 2px;
+      background: linear-gradient(90deg, transparent, var(--gold), transparent);
+      margin: 0 auto 2.5rem;
+    }
+    .hero-cta {
+      display: inline-block;
+      background: linear-gradient(135deg, var(--gold), var(--gold-light));
+      color: var(--green-dark);
+      font-family: 'DM Sans', sans-serif;
+      font-weight: 700; font-size: 0.85rem;
+      letter-spacing: 0.12em; text-transform: uppercase;
+      text-decoration: none;
+      padding: 0.9rem 2.5rem; border-radius: 50px;
+      box-shadow: 0 8px 25px rgba(201,168,76,0.4);
+      transition: var(--transition);
+    }
+    .hero-cta:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 14px 35px rgba(201,168,76,0.55);
+    }
+    .scroll-indicator {
+      position: absolute; bottom: 2rem; left: 50%;
+      transform: translateX(-50%); z-index: 2;
+      display: flex; flex-direction: column;
+      align-items: center; gap: 0.4rem;
+      color: rgba(255,255,255,0.6);
+      font-family: 'DM Sans', sans-serif;
+      font-size: 0.65rem; letter-spacing: 0.18em; text-transform: uppercase;
+    }
+    .scroll-arrow {
+      width: 20px; height: 20px;
+      border-right: 2px solid rgba(255,255,255,0.5);
+      border-bottom: 2px solid rgba(255,255,255,0.5);
+      transform: rotate(45deg);
+      animation: bounce 1.8s infinite;
+    }
+    @keyframes bounce {
+      0%,100% { transform: rotate(45deg) translateY(0); }
+      50%      { transform: rotate(45deg) translateY(6px); }
+    }
+
+    /* ── SHARED SECTION STYLES ── */
+    section { padding: 6rem 2rem; }
+    .section-label {
+      display: inline-block;
+      color: var(--green-mid);
+      font-family: 'DM Sans', sans-serif;
+      font-size: 0.7rem; font-weight: 700;
+      letter-spacing: 0.24em; text-transform: uppercase;
+      margin-bottom: 0.75rem;
+    }
+    .section-title {
+      font-family: 'Playfair Display', serif;
+      font-size: clamp(2rem,4vw,3rem);
+      font-weight: 700; color: var(--green-dark);
+      line-height: 1.2; margin-bottom: 1rem;
+    }
+    .gold-underline {
+      width: 60px; height: 3px;
+      background: linear-gradient(90deg, var(--gold), var(--gold-light));
+      border-radius: 2px; margin-bottom: 2rem;
+    }
+    .container { max-width: 1200px; margin: 0 auto; }
+
+    /* ── PURPOSE ── */
+    #purpose { background: var(--white); }
+    .purpose-grid {
+      display: grid; grid-template-columns: 1fr 1fr;
+      gap: 5rem; align-items: center;
+    }
+    .purpose-text p {
+      color: var(--text-mid);
+      font-family: 'DM Sans', sans-serif;
+      font-size: 1.05rem; line-height: 1.85;
+      margin-bottom: 1.2rem;
+    }
+    .purpose-image-wrap { position: relative; }
+    .purpose-image-wrap::before {
+      content: '';
+      position: absolute; top: -20px; right: -20px;
+      width: 100%; height: 100%;
+      border: 3px solid var(--gold);
+      border-radius: var(--radius-lg); z-index: 0;
+    }
+    .purpose-image-wrap img {
+      position: relative; z-index: 1;
+      width: 100%; height: 420px;
+      object-fit: cover; border-radius: var(--radius-lg);
+      box-shadow: var(--shadow-lg);
+    }
+
+    /* ── HALL OF FAME ── */
+    #hall-of-fame {
+      background: linear-gradient(180deg, var(--cream) 0%, #eef5f0 100%);
+    }
+    .hof-header { text-align: center; margin-bottom: 3.5rem; }
+    .hof-header .gold-underline { margin: 0 auto 2rem; }
+    .hof-header p {
+      font-family: 'DM Sans', sans-serif;
+      color: var(--text-mid); max-width: 550px;
+      margin: 0 auto; line-height: 1.7;
+    }
+    .hof-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(300px,1fr));
+      gap: 2rem;
+    }
+    .hof-tile {
+      background: var(--white); border-radius: var(--radius-lg);
+      overflow: hidden; box-shadow: var(--shadow-sm);
+      cursor: pointer; transition: var(--transition);
+      border: 1px solid rgba(201,168,76,0.15);
+    }
+    .hof-tile:hover {
+      transform: translateY(-8px);
+      box-shadow: var(--shadow-lg);
+      border-color: var(--gold);
+    }
+    .hof-tile-img-wrap { overflow: hidden; position: relative; }
+    .hof-tile-img {
+      width: 100%; height: 200px;
+      object-fit: cover; display: block;
+      transition: var(--transition);
+    }
+    .hof-tile:hover .hof-tile-img { transform: scale(1.04); }
+    .hof-tile-year-badge {
+      position: absolute; top: 12px; left: 12px;
+      background: var(--green-dark); color: var(--gold);
+      font-family: 'DM Sans', sans-serif;
+      font-size: 0.7rem; font-weight: 700;
+      letter-spacing: 0.12em; text-transform: uppercase;
+      padding: 0.3rem 0.8rem; border-radius: 50px;
+    }
+    .hof-tile-body { padding: 1.5rem; }
+    .hof-tile-venue {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.2rem; font-weight: 700;
+      color: var(--green-dark); margin-bottom: 0.75rem;
+    }
+    .hof-tile-champion {
+      display: flex; align-items: center; gap: 0.6rem;
+      color: var(--text-mid);
+      font-family: 'DM Sans', sans-serif;
+      font-size: 0.9rem;
+    }
+    .hof-tile-champion strong { color: var(--green-dark); font-weight: 600; }
+    .hof-tile-cta {
+      display: inline-flex; align-items: center; gap: 0.4rem;
+      margin-top: 1.2rem; color: var(--green-mid);
+      font-family: 'DM Sans', sans-serif;
+      font-size: 0.8rem; font-weight: 600;
+      letter-spacing: 0.08em; text-transform: uppercase;
+      transition: var(--transition);
+    }
+    .hof-tile:hover .hof-tile-cta { color: var(--gold); gap: 0.7rem; }
+
+    /* ── ORGANISERS ── */
+    #organisers { background: var(--green-dark); color: var(--white); }
+    #organisers .section-title { color: var(--white); }
+    #organisers .section-label { color: var(--gold-light); }
+    .organisers-header { text-align: center; margin-bottom: 1rem; }
+    .organisers-intro {
+      text-align: center;
+      color: rgba(255,255,255,0.7);
+      font-family: 'DM Sans', sans-serif;
+      font-size: 1rem; max-width: 550px;
+      margin: 0 auto 3.5rem; line-height: 1.7;
+    }
+    .organisers-grid {
+      display: grid; grid-template-columns: repeat(4,1fr);
+      gap: 2.5rem; max-width: 900px; margin: 0 auto;
+    }
+    .organiser-card {
+      display: flex; flex-direction: column;
+      align-items: center; text-align: center;
+    }
+    .organiser-img-wrap {
+      position: relative; width: 140px; height: 140px;
+      margin-bottom: 1.2rem;
+    }
+    .organiser-img-wrap::before {
+      content: '';
+      position: absolute; inset: -4px; border-radius: 50%;
+      background: linear-gradient(135deg, var(--gold), var(--gold-light), var(--green-light));
+      z-index: 0;
+    }
+    .organiser-img-wrap img {
+      position: relative; z-index: 1;
+      width: 100%; height: 100%;
+      object-fit: cover; border-radius: 50%;
+      border: 3px solid var(--green-dark);
+    }
+    .organiser-name {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.05rem; font-weight: 700;
+      color: var(--white); margin-bottom: 0.3rem;
+    }
+    .organiser-title {
+      font-family: 'DM Sans', sans-serif;
+      font-size: 0.75rem; font-weight: 600;
+      letter-spacing: 0.16em; text-transform: uppercase;
+      color: var(--gold);
+    }
+
+    /* ── FOOTER ── */
+    footer {
+      background: #0f2219;
+      color: rgba(255,255,255,0.5);
+      text-align: center; padding: 2rem;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 0.85rem; letter-spacing: 0.04em;
+    }
+    footer span { color: var(--gold); }
+
+    /* ── COMPETITION PAGES ── */
+    .comp-page {
+      display: none; position: fixed; inset: 0;
+      z-index: 2000; background: var(--cream); overflow-y: auto;
+    }
+    .comp-page.active { display: block; }
+    .comp-back-bar {
+      position: sticky; top: 0; z-index: 100;
+      background: rgba(26,58,42,0.95);
+      backdrop-filter: blur(10px);
+      padding: 1rem 2rem;
+      display: flex; align-items: center; gap: 1rem;
+      border-bottom: 1px solid rgba(201,168,76,0.3);
+    }
+    .comp-back-btn {
+      display: inline-flex; align-items: center; gap: 0.5rem;
+      color: var(--gold); text-decoration: none;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 0.85rem; font-weight: 600;
+      letter-spacing: 0.08em; text-transform: uppercase;
+      transition: var(--transition);
+      cursor: pointer; background: none; border: none;
+    }
+    .comp-back-btn:hover { color: var(--gold-light); gap: 0.8rem; }
+    .comp-hero {
+      width: 100%; height: 55vh; min-height: 350px;
+      object-fit: cover; display: block;
+    }
+    .comp-hero-wrap { position: relative; }
+    .comp-hero-overlay {
+      position: absolute; inset: 0;
+      background: linear-gradient(to top, rgba(26,58,42,0.85) 0%, transparent 60%);
+    }
+    .comp-hero-text {
+      position: absolute; bottom: 2.5rem;
+      left: 2.5rem; right: 2.5rem;
+    }
+    .comp-hero-text h1 {
+      font-family: 'Playfair Display', serif;
+      font-size: clamp(2rem,5vw,3.5rem); font-weight: 900;
+      color: var(--white);
+      text-shadow: 0 4px 20px rgba(0,0,0,0.5);
+      margin-bottom: 0.5rem;
+    }
+    .comp-dates {
+      font-family: 'DM Sans', sans-serif;
+      color: var(--gold-light); font-size: 1rem;
+      font-weight: 500; letter-spacing: 0.06em;
+    }
+    .comp-body { max-width: 1100px; margin: 0 auto; padding: 4rem 2rem; }
+    .comp-awards {
+      display: flex; flex-wrap: wrap;
+      gap: 1.5rem; margin-bottom: 3.5rem;
+    }
+    .comp-award-card {
+      flex: 1 1 200px; background: var(--white);
+      border-radius: var(--radius-lg);
+      padding: 2rem 1.5rem; text-align: center;
+      box-shadow: var(--shadow-sm);
+      border-top: 4px solid var(--gold);
+      transition: var(--transition);
+    }
+    .comp-award-card:hover { transform: translateY(-4px); box-shadow: var(--shadow-md); }
+    .comp-award-icon { font-size: 2.2rem; margin-bottom: 0.75rem; }
+    .comp-award-label {
+      font-family: 'DM Sans', sans-serif;
+      font-size: 0.7rem; font-weight: 700;
+      letter-spacing: 0.18em; text-transform: uppercase;
+      color: var(--green-mid); margin-bottom: 0.5rem;
+    }
+    .comp-award-name {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.3rem; font-weight: 700; color: var(--green-dark);
+    }
+    .comp-content-grid {
+      display: grid; grid-template-columns: 2fr 1fr;
+      gap: 3rem; align-items: start;
+    }
+    .comp-description {
+      font-family: 'DM Sans', sans-serif;
+      font-size: 1.05rem; line-height: 1.85; color: var(--text-mid);
+    }
+    .comp-description p { margin-bottom: 1.2rem; }
+    .comp-sidebar {
+      background: var(--white); border-radius: var(--radius-lg);
+      padding: 2rem; box-shadow: var(--shadow-sm);
+      border: 1px solid rgba(201,168,76,0.2);
+    }
+    .comp-sidebar h3 {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.1rem; font-weight: 700; color: var(--green-dark);
+      margin-bottom: 1.2rem; padding-bottom: 0.75rem;
+      border-bottom: 2px solid var(--gold);
+    }
+    .comp-participants { list-style: none; }
+    .comp-participants li {
+      display: flex; align-items: center; gap: 0.6rem;
+      padding: 0.55rem 0;
+      border-bottom: 1px solid rgba(0,0,0,0.06);
+      font-family: 'DM Sans', sans-serif;
+      font-size: 0.92rem; color: var(--text-mid);
+    }
+    .comp-participants li::before { content: '⛳'; font-size: 0.85rem; }
+    .comp-participants li:last-child { border-bottom: none; }
+
+    /* ── GALLERY ── */
+    .comp-gallery-section { margin-top: 4rem; }
+    .comp-gallery-title {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.8rem; font-weight: 700;
+      color: var(--green-dark); margin-bottom: 0.5rem;
+    }
+    .comp-gallery-divider {
+      width: 50px; height: 3px;
+      background: linear-gradient(90deg, var(--gold), var(--gold-light));
+      border-radius: 2px; margin-bottom: 2rem;
+    }
+    .comp-gallery-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(280px,1fr));
+      gap: 1.5rem;
+    }
+    .comp-gallery-item {
+      background: var(--white); border-radius: var(--radius-md);
+      overflow: hidden; box-shadow: var(--shadow-sm);
+      border: 1px solid rgba(201,168,76,0.15);
+      transition: var(--transition); cursor: pointer;
+    }
+    .comp-gallery-item:hover {
+      transform: translateY(-5px);
+      box-shadow: var(--shadow-md);
+      border-color: var(--gold);
+    }
+    .comp-gallery-item-inner { overflow: hidden; }
+    .comp-gallery-item img {
+      width: 100%; height: 220px;
+      object-fit: cover; display: block;
+      transition: var(--transition);
+    }
+    .comp-gallery-item:hover img { transform: scale(1.04); }
+    .comp-gallery-caption {
+      padding: 0.85rem 1rem;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 0.88rem; color: var(--text-mid);
+      font-style: italic; line-height: 1.5;
+      border-top: 1px solid rgba(201,168,76,0.15);
+    }
+
+    /* ── LIGHTBOX ── */
+    .lightbox {
+      display: none; position: fixed; inset: 0;
+      z-index: 9999; background: rgba(0,0,0,0.92);
+      align-items: center; justify-content: center;
+      flex-direction: column; padding: 2rem;
+    }
+    .lightbox.open { display: flex; }
+    .lightbox-img {
+      max-width: 90vw; max-height: 75vh;
+      object-fit: contain; border-radius: var(--radius-md);
+      box-shadow: 0 30px 80px rgba(0,0,0,0.6);
+    }
+    .lightbox-caption {
+      margin-top: 1.2rem;
+      font-family: 'DM Sans', sans-serif;
+      color: rgba(255,255,255,0.8);
+      font-size: 0.95rem; font-style: italic;
+      text-align: center; max-width: 600px;
+    }
+    .lightbox-close {
+      position: absolute; top: 1.5rem; right: 1.5rem;
+      background: none; border: none; color: var(--white);
+      font-size: 2rem; cursor: pointer; line-height: 1;
+      opacity: 0.7; transition: var(--transition);
+    }
+    .lightbox-close:hover { opacity: 1; transform: rotate(90deg); }
+    .lightbox-nav {
+      position: absolute; top: 50%; transform: translateY(-50%);
+      background: rgba(255,255,255,0.1);
+      border: 1px solid rgba(255,255,255,0.2);
+      color: var(--white); font-size: 1.5rem;
+      width: 50px; height: 50px; border-radius: 50%;
+      cursor: pointer; display: flex;
+      align-items: center; justify-content: center;
+      transition: var(--transition);
+    }
+    .lightbox-nav:hover { background: rgba(201,168,76,0.3); border-color: var(--gold); }
+    .lightbox-prev { left: 1.5rem; }
+    .lightbox-next { right: 1.5rem; }
+    .lightbox-counter {
+      position: absolute; bottom: 1.5rem;
+      font-family: 'DM Sans', sans-serif;
+      color: rgba(255,255,255,0.5);
+      font-size: 0.8rem; letter-spacing: 0.1em;
+    }
+
+    /* ── RESPONSIVE ── */
+    @media (max-width: 900px) {
+      .purpose-grid { grid-template-columns: 1fr; gap: 3rem; }
+      .purpose-image-wrap::before { display: none; }
+      .organisers-grid { grid-template-columns: repeat(2,1fr); gap: 2rem; }
+      .comp-content-grid { grid-template-columns: 1fr; }
+      .comp-gallery-grid { grid-template-columns: repeat(auto-fill, minmax(220px,1fr)); }
+    }
+    @media (max-width: 768px) {
+      nav { padding: 0 1.5rem; }
+      .nav-links { display: none; }
+      .hamburger { display: flex; }
+      section { padding: 4rem 1.25rem; }
+      .hof-grid { grid-template-columns: 1fr; }
+      .comp-hero-text { left: 1.5rem; right: 1.5rem; bottom: 1.5rem; }
+      .comp-body { padding: 2.5rem 1.25rem; }
+      .lightbox-nav { display: none; }
+      .comp-gallery-grid { grid-template-columns: 1fr; }
+    }
+    @media (max-width: 480px) {
+      .organisers-grid { grid-template-columns: repeat(2,1fr); gap: 1.5rem; }
+      .organiser-img-wrap { width: 110px; height: 110px; }
+
+    }
+
+    /* ── FADE IN ── */
+    .fade-in {
+      opacity: 0; transform: translateY(30px);
+      transition: opacity 0.7s ease, transform 0.7s ease;
+    }
+    .fade-in.visible { opacity: 1; transform: translateY(0); }
+  </style>
+</head>
+<body>
+
+  <!-- NAV -->
+  <nav id="navbar">
+    <a href="#home" class="nav-logo">
+      <svg class="nav-logo-img" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+        <circle cx="50" cy="50" r="50" fill="#1a3a2a"/>
+        <text x="50" y="42" text-anchor="middle" font-family="Georgia,serif" font-size="26" font-weight="bold" fill="#c9a84c">SW</text>
+        <text x="50" y="63" text-anchor="middle" font-family="Georgia,serif" font-size="10" fill="#e8c97a" letter-spacing="2">GOLF</text>
+        <line x1="22" y1="70" x2="78" y2="70" stroke="#c9a84c" stroke-width="1.5"/>
+      </svg>
+    </a>
+    <ul class="nav-links">
+      <li><a href="#home">Home</a></li>
+      <li><a href="#hall-of-fame">Hall of Fame</a></li>
+    </ul>
+    <button class="hamburger" id="hamburger" aria-label="Toggle menu">
+      <span></span><span></span><span></span>
+    </button>
+  </nav>
+
+  <!-- MOBILE MENU -->
+  <div class="mobile-menu" id="mobileMenu">
+    <a href="#home"         onclick="closeMobileMenu()">Home</a>
+    <a href="#hall-of-fame" onclick="closeMobileMenu()">Hall of Fame</a>
+  </div>
+
+  <!-- HERO -->
+  <section id="home">
+    <div class="hero-bg" id="heroBg"></div>
+    <div class="hero-overlay"></div>
+    <div class="hero-content">
+      <div class="hero-badge">Est. Since the Beginning</div>
+      <h1 class="hero-title">Welcome to <em>Sandwedgers</em></h1>
+      <div class="hero-divider"></div>
+      <p class="hero-subtitle">Amicitia, Dignitas et Victoria</p>
+      <a href="#hall-of-fame" class="hero-cta">View Hall of Fame</a>
+    </div>
+    <div class="scroll-indicator">
+      <span>Scroll</span>
+      <div class="scroll-arrow"></div>
+    </div>
+  </section>
+
+  <!-- OUR PURPOSE -->
+  <section id="purpose">
+    <div class="container">
+      <div class="purpose-grid">
+        <div class="purpose-text fade-in">
+          <span class="section-label">Who We Are</span>
+          <h2 class="section-title">Our Purpose</h2>
+          <div class="gold-underline"></div>
+          <p>
+            The Sandwedgers are a brotherhood of golfers united by a shared love of the game,
+            good company, and the pursuit of glory on the fairways. Each year, we gather at a
+            carefully chosen venue to compete for the most coveted prize in our golfing calendar.
+          </p>
+          <p>
+            Beyond the competition, the Sandwedgers is about friendship, tradition, and creating
+            memories that last a lifetime. From the first tee shot to the final putt, every moment
+            is cherished — and every champion is immortalised in our Hall of Fame.
+          </p>
+        </div>
+        <div class="purpose-image-wrap fade-in">
+          <img id="purposeImg" src="" alt="Sandwedgers in action"
+               onerror="this.src='https://images.unsplash.com/photo-1535131749006-b7f58c99034b?w=800&q=80'" />
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- HALL OF FAME -->
+  <section id="hall-of-fame">
+    <div class="container">
+      <div class="hof-header fade-in">
+        <span class="section-label">Annual Competitions</span>
+        <h2 class="section-title">Hall of Fame</h2>
+        <div class="gold-underline"></div>
+        <p>A celebration of every Sandwedgers tournament — the venues, the champions, and the moments that define our legacy.</p>
+      </div>
+      <div class="hof-grid" id="hofGrid"></div>
+    </div>
+  </section>
+
+  <!-- ORGANISERS -->
+  <section id="organisers">
+    <div class="container">
+      <div class="organisers-header fade-in">
+        <span class="section-label">The People Behind It All</span>
+        <h2 class="section-title">The Organisers</h2>
+        <div class="gold-underline" style="margin:0 auto 1.5rem;"></div>
+      </div>
+      <p class="organisers-intro fade-in">
+        The Sandwedgers would not exist without the dedication and passion of our four Founders,
+        who bring this annual tradition to life year after year.
+      </p>
+      <div class="organisers-grid" id="organisersGrid"></div>
+    </div>
+  </section>
+
+  <!-- FOOTER -->
+  <footer>
+    <p>&copy; <span id="footerYear"></span> <span>Sandwedgers</span>. All rights reserved.</p>
+    <p style="margin-top:0.4rem;font-size:0.75rem;opacity:0.6;">Amicitia, Dignitas et Victoria</p>
+  </footer>
+
+  <!-- COMPETITION PAGES -->
+  <div id="compPagesContainer"></div>
+
+  <!-- LIGHTBOX -->
+  <div class="lightbox" id="lightbox">
+    <button class="lightbox-close" id="lightboxClose" aria-label="Close">&times;</button>
+    <button class="lightbox-nav lightbox-prev" id="lightboxPrev" aria-label="Previous">&#8249;</button>
+    <img class="lightbox-img" id="lightboxImg" src="" alt="" />
+    <p class="lightbox-caption" id="lightboxCaption"></p>
+    <button class="lightbox-nav lightbox-next" id="lightboxNext" aria-label="Next">&#8250;</button>
+    <span class="lightbox-counter" id="lightboxCounter"></span>
+  </div>
+
+  <script>
+    /* ================================================
+       CONFIGURATION
+       ================================================
+
+       OPTION A — Google Sheets (recommended)
+       ----------------------------------------
+       1. Publish your Google Sheet as CSV:
+          File > Share > Publish to web > CSV
+       2. Paste the URL below and set USE_GOOGLE_SHEET = true
+
+       Sheet columns (row 1 = headers):
+         year | venue | venueImage | tileImage | champion | runnerUp |
+         sandwedgerOfYear | dates | participants | description |
+         photos | photoCaptions
+
+         - participants  : pipe-separated  e.g.  John Smith|Jane Doe
+         - photos        : pipe-separated image URLs
+         - photoCaptions : pipe-separated captions (blank segment = no caption)
+         - Any blank field is simply not displayed.
+
+       OPTION B — Static data (demo / fallback)
+       ------------------------------------------
+       Set USE_GOOGLE_SHEET = false and edit STATIC_DATA below.
+    ================================================ */
+
+    var USE_GOOGLE_SHEET     = false;
+    var GOOGLE_SHEET_CSV_URL = 'YOUR_GOOGLE_SHEET_CSV_URL_HERE';
+
+    var HERO_IMAGE_URL    = 'https://images.unsplash.com/photo-1587174486073-ae5e5cff23aa?w=1800&q=80';
+    var PURPOSE_IMAGE_URL = 'https://images.unsplash.com/photo-1535131749006-b7f58c99034b?w=800&q=80';
+
+    var ORGANISERS = [
+      { name: 'Founder One',   image: 'FOUNDER_1_IMAGE_URL' },
+      { name: 'Founder Two',   image: 'FOUNDER_2_IMAGE_URL' },
+      { name: 'Founder Three', image: 'FOUNDER_3_IMAGE_URL' },
+      { name: 'Founder Four',  image: 'FOUNDER_4_IMAGE_URL' }
+    ];
+
+    var STATIC_DATA = [
+      {
+        year:             '2024',
+        venue:            'Royal Portrush',
+        venueImage:       'https://images.unsplash.com/photo-1592919505780-303950717480?w=1200&q=80',
+        tileImage:        'https://images.unsplash.com/photo-1592919505780-303950717480?w=600&q=80',
+        champion:         'John Smith',
+        runnerUp:         "Michael O'Brien",
+        sandwedgerOfYear: 'Patrick Doyle',
+        dates:            '14\u201316 June 2024',
+        participants:     ['John Smith', "Michael O'Brien", 'Patrick Doyle', 'Se\u00e1n Murphy', 'Ci\u00e1r\u00e1n Kelly', 'Declan Walsh'],
+        description:      'The 2024 Sandwedgers tournament at Royal Portrush was nothing short of spectacular. Set against the dramatic backdrop of the Antrim coast, competitors battled challenging winds and fast greens across three unforgettable days of golf.\n\nJohn Smith produced a masterclass of links golf to claim the title, while Patrick Doyle\'s consistent sportsmanship and camaraderie earned him the coveted Sandwedger of the Year award.',
+        photos:           [
+          'https://images.unsplash.com/photo-1587174486073-ae5e5cff23aa?w=800&q=80',
+          'https://images.unsplash.com/photo-1535131749006-b7f58c99034b?w=800&q=80',
+          'https://images.unsplash.com/photo-1611374243147-44a702c2d44c?w=800&q=80'
+        ],
+        photoCaptions:    [
+          'Teeing off on the famous 18th hole at Royal Portrush.',
+          'The group enjoying the post-round celebrations.',
+          'The champion receives the trophy.'
+        ]
+      },
+      {
+        year:             '2023',
+        venue:            'Lahinch Golf Club',
+        venueImage:       'https://images.unsplash.com/photo-1600166898405-da9535204843?w=1200&q=80',
+        tileImage:        'https://images.unsplash.com/photo-1600166898405-da9535204843?w=600&q=80',
+        champion:         'Declan Walsh',
+        runnerUp:         'Ci\u00e1r\u00e1n Kelly',
+        sandwedgerOfYear: '',
+        dates:            '9\u201311 June 2023',
+        participants:     ['John Smith', "Michael O'Brien", 'Patrick Doyle', 'Se\u00e1n Murphy', 'Ci\u00e1r\u00e1n Kelly', 'Declan Walsh'],
+        description:      'Lahinch provided a stunning west-coast setting for the 2023 edition. The old Tom Morris layout tested every player\'s course management, with Declan Walsh emerging as a worthy champion after a nail-biting final round.',
+        photos:           [
+          'https://images.unsplash.com/photo-1600166898405-da9535204843?w=800&q=80',
+          'https://images.unsplash.com/photo-1592919505780-303950717480?w=800&q=80'
+        ],
+        photoCaptions:    [
+          'The iconic Lahinch links stretching along the Atlantic.',
+          ''
+        ]
+      },
+      {
+        year:             '2022',
+        venue:            'Ballybunion Golf Club',
+        venueImage:       'https://images.unsplash.com/photo-1611374243147-44a702c2d44c?w=1200&q=80',
+        tileImage:        'https://images.unsplash.com/photo-1611374243147-44a702c2d44c?w=600&q=80',
+        champion:         'Se\u00e1n Murphy',
+        runnerUp:         '',
+        sandwedgerOfYear: "Michael O'Brien",
+        dates:            '17\u201319 June 2022',
+        participants:     ['John Smith', "Michael O'Brien", 'Patrick Doyle', 'Se\u00e1n Murphy', 'Ci\u00e1r\u00e1n Kelly', 'Declan Walsh'],
+        description:      "Ballybunion's legendary Old Course delivered everything we had hoped for \u2014 raw, rugged, and utterly magnificent. Se\u00e1n Murphy played with remarkable composure throughout, securing his first Sandwedgers title in style.",
+        photos:           [],
+        photoCaptions:    []
+      }
+    ];
+
+    /* ================================================
+       END OF CONFIGURATION
+    ================================================ */
+
+    var _allData = [];
+
+    function isPresent(val) {
+      return val !== undefined && val !== null && String(val).trim() !== '';
+    }
+
+    function toArray(val, sep) {
+      if (Array.isArray(val)) return val;
+      sep = sep || '|';
+      return (val || '').split(sep).map(function(s){ return s.trim(); });
+    }
+
+    // ── Set images ─────────────────────────────────────────────────────────
+    document.getElementById('heroBg').style.backgroundImage = "url('" + HERO_IMAGE_URL + "')";
+    document.getElementById('purposeImg').src = PURPOSE_IMAGE_URL;
+    document.getElementById('footerYear').textContent = new Date().getFullYear();
+
+    // ── Navbar scroll ──────────────────────────────────────────────────────
+    window.addEventListener('scroll', function() {
+      document.getElementById('navbar').classList.toggle('scrolled', window.scrollY > 60);
+    });
+
+    // ── Hamburger ──────────────────────────────────────────────────────────
+    var hamburger  = document.getElementById('hamburger');
+    var mobileMenu = document.getElementById('mobileMenu');
+
+    hamburger.addEventListener('click', function() {
+      hamburger.classList.toggle('open');
+      mobileMenu.classList.toggle('open');
+      document.body.style.overflow = mobileMenu.classList.contains('open') ? 'hidden' : '';
+    });
+
+    function closeMobileMenu() {
+      hamburger.classList.remove('open');
+      mobileMenu.classList.remove('open');
+      document.body.style.overflow = '';
+    }
+
+    // ── Intersection Observer ──────────────────────────────────────────────
+    var observer = new IntersectionObserver(function(entries) {
+      entries.forEach(function(e) {
+        if (e.isIntersecting) e.target.classList.add('visible');
+      });
+    }, { threshold: 0.12 });
+
+    function observeFadeIns() {
+      document.querySelectorAll('.fade-in').forEach(function(el) { observer.observe(el); });
+    }
+
+    // ── Render Organisers ──────────────────────────────────────────────────
+    function renderOrganisers() {
+      var html = '';
+      for (var i = 0; i < ORGANISERS.length; i++) {
+        var o = ORGANISERS[i];
+        var fallback = 'https://ui-avatars.com/api/?name=' + encodeURIComponent(o.name) + '&background=2d6a4f&color=fff&size=200';
+        html += '<div class="organiser-card fade-in">'
+              + '<div class="organiser-img-wrap">'
+              + '<img src="' + o.image + '" alt="' + o.name + '" onerror="this.src=\'' + fallback + '\'" />'
+              + '</div>'
+              + '<div class="organiser-name">' + o.name + '</div>'
+              + '<div class="organiser-title">Founder</div>'
+              + '</div>';
+      }
+      document.getElementById('organisersGrid').innerHTML = html;
+    }
+
+    // ── Render Hall of Fame tiles ──────────────────────────────────────────
+    function renderHOF(data) {
+      var html = '';
+      for (var i = 0; i < data.length; i++) {
+        var comp = data[i];
+        var championHTML = isPresent(comp.champion)
+          ? '<div class="hof-tile-champion"><span class="trophy-icon">&#127942;</span><span>Champion: <strong>' + comp.champion + '</strong></span></div>'
+          : '';
+        html += '<div class="hof-tile fade-in" onclick="openCompPage(' + i + ')" role="button" tabindex="0" onkeydown="if(event.key===\'Enter\')openCompPage(' + i + ')">'
+              + '<div class="hof-tile-img-wrap">'
+              + '<img class="hof-tile-img" src="' + (comp.tileImage || comp.venueImage || '') + '" alt="' + comp.venue + '" onerror="this.src=\'https://images.unsplash.com/photo-1587174486073-ae5e5cff23aa?w=600&q=80\'" />'
+              + '<div class="hof-tile-year-badge">' + comp.year + '</div>'
+              + '</div>'
+              + '<div class="hof-tile-body">'
+              + '<div class="hof-tile-venue">' + comp.venue + '</div>'
+              + championHTML
+              + '<div class="hof-tile-cta">View Full Details &rarr;</div>'
+              + '</div>'
+              + '</div>';
+      }
+      document.getElementById('hofGrid').innerHTML = html;
+    }
+
+    // ── Render Competition Pages ───────────────────────────────────────────
+    function renderCompPages(data) {
+      var container = document.getElementById('compPagesContainer');
+      var allHTML   = '';
+
+      for (var i = 0; i < data.length; i++) {
+        var comp = data[i];
+
+        // Participants
+        var participants = Array.isArray(comp.participants)
+          ? comp.participants
+          : toArray(comp.participants, '|').filter(function(p){ return p !== ''; });
+
+        // Award cards
+        var awardDefs = [
+          { icon: '&#127942;', label: 'Champion',               value: comp.champion },
+          { icon: '&#129352;', label: 'Runner-Up',              value: comp.runnerUp },
+          { icon: '&#11088;',  label: 'Sandwedger of the Year', value: comp.sandwedgerOfYear }
+        ];
+        var awardsHTML = '';
+        for (var a = 0; a < awardDefs.length; a++) {
+          if (isPresent(awardDefs[a].value)) {
+            awardsHTML += '<div class="comp-award-card">'
+                        + '<div class="comp-award-icon">' + awardDefs[a].icon + '</div>'
+                        + '<div class="comp-award-label">' + awardDefs[a].label + '</div>'
+                        + '<div class="comp-award-name">' + awardDefs[a].value + '</div>'
+                        + '</div>';
+          }
+        }
+        if (awardsHTML) awardsHTML = '<div class="comp-awards">' + awardsHTML + '</div>';
+
+        // Dates
+        var datesHTML = isPresent(comp.dates) ? '<div class="comp-dates">&#128197; ' + comp.dates + '</div>' : '';
+
+        // Description
+        var descHTML = '';
+        if (isPresent(comp.description)) {
+          var paras = comp.description.split('\n');
+          for (var p = 0; p < paras.length; p++) {
+            if (paras[p].trim()) descHTML += '<p>' + paras[p].trim() + '</p>';
+          }
+        }
+
+        // Participants sidebar
+        var sidebarHTML = '';
+        if (participants.length) {
+          var liHTML = '';
+          for (var pi = 0; pi < participants.length; pi++) {
+            if (participants[pi]) liHTML += '<li>' + participants[pi] + '</li>';
+          }
+          sidebarHTML = '<div class="comp-sidebar"><h3>&#9971; Participants</h3><ul class="comp-participants">' + liHTML + '</ul></div>';
+        }
+
+        // Grid column style
+        var gridStyle = sidebarHTML ? '' : ' style="grid-template-columns:1fr;"';
+
+        // Photos gallery
+        var photos   = Array.isArray(comp.photos)        ? comp.photos        : toArray(comp.photos, '|').filter(function(s){ return s !== ''; });
+        var captions = Array.isArray(comp.photoCaptions)  ? comp.photoCaptions : toArray(comp.photoCaptions, '|');
+
+        var galleryHTML = '';
+        if (photos.length) {
+          var tilesHTML = '';
+          for (var ph = 0; ph < photos.length; ph++) {
+            var cap = captions[ph] || '';
+            var capHTML = isPresent(cap) ? '<div class="comp-gallery-caption">' + cap + '</div>' : '';
+            tilesHTML += '<div class="comp-gallery-item" onclick="openLightbox(' + i + ',' + ph + ')" role="button" tabindex="0" onkeydown="if(event.key===\'Enter\')openLightbox(' + i + ',' + ph + ')">'
+                       + '<div class="comp-gallery-item-inner">'
+                       + '<img src="' + photos[ph] + '" alt="' + (cap || 'Photo ' + (ph + 1)) + '" onerror="this.parentElement.parentElement.style.display=\'none\'" />'
+                       + '</div>'
+                       + capHTML
+                       + '</div>';
+          }
+          galleryHTML = '<div class="comp-gallery-section">'
+                      + '<h2 class="comp-gallery-title">Photos</h2>'
+                      + '<div class="comp-gallery-divider"></div>'
+                      + '<div class="comp-gallery-grid">' + tilesHTML + '</div>'
+                      + '</div>';
+        }
+
+        allHTML += '<div class="comp-page" id="compPage' + i + '">'
+                 + '<div class="comp-back-bar">'
+                 + '<button class="comp-back-btn" onclick="closeCompPage(' + i + ')">&#8592; Back to Homepage</button>'
+                 + '<span style="color:rgba(255,255,255,0.4);font-size:0.8rem;">|</span>'
+                 + '<span style="color:rgba(255,255,255,0.7);font-size:0.85rem;">' + comp.venue + ' &middot; ' + comp.year + '</span>'
+                 + '</div>'
+                 + '<div class="comp-hero-wrap">'
+                 + '<img class="comp-hero" src="' + (comp.venueImage || '') + '" alt="' + comp.venue + '" onerror="this.src=\'https://images.unsplash.com/photo-1587174486073-ae5e5cff23aa?w=1800&q=80\'" />'
+                 + '<div class="comp-hero-overlay"></div>'
+                 + '<div class="comp-hero-text"><h1>' + comp.venue + '</h1>' + datesHTML + '</div>'
+                 + '</div>'
+                 + '<div class="comp-body">'
+                 + awardsHTML
+                 + '<div class="comp-content-grid"' + gridStyle + '>'
+                 + '<div class="comp-description">' + descHTML + '</div>'
+                 + sidebarHTML
+                 + '</div>'
+                 + galleryHTML
+                 + '</div>'
+                 + '</div>';
+      }
+
+      container.innerHTML = allHTML;
+    }
+
+    // ── Open / Close competition pages ─────────────────────────────────────
+    function openCompPage(index) {
+      document.getElementById('compPage' + index).classList.add('active');
+      document.body.style.overflow = 'hidden';
+    }
+
+    function closeCompPage(index) {
+      document.getElementById('compPage' + index).classList.remove('active');
+      document.body.style.overflow = '';
+    }
+
+    // ── Lightbox ───────────────────────────────────────────────────────────
+    var _lbPhotos   = [];
+    var _lbCaptions = [];
+    var _lbIndex    = 0;
+
+    function openLightbox(compIndex, photoIndex) {
+      var comp    = _allData[compIndex];
+      _lbPhotos   = Array.isArray(comp.photos)        ? comp.photos        : toArray(comp.photos, '|').filter(function(s){ return s !== ''; });
+      _lbCaptions = Array.isArray(comp.photoCaptions)  ? comp.photoCaptions : toArray(comp.photoCaptions, '|');
+      _lbIndex    = photoIndex;
+      updateLightbox();
+      document.getElementById('lightbox').classList.add('open');
+      document.body.style.overflow = 'hidden';
+    }
+
+    function updateLightbox() {
+      document.getElementById('lightboxImg').src              = _lbPhotos[_lbIndex]   || '';
+      document.getElementById('lightboxCaption').textContent  = _lbCaptions[_lbIndex] || '';
+      document.getElementById('lightboxCounter').textContent  = (_lbIndex + 1) + ' / ' + _lbPhotos.length;
+      document.getElementById('lightboxPrev').style.visibility = _lbPhotos.length > 1 ? 'visible' : 'hidden';
+      document.getElementById('lightboxNext').style.visibility = _lbPhotos.length > 1 ? 'visible' : 'hidden';
+    }
+
+    function closeLightbox() {
+      document.getElementById('lightbox').classList.remove('open');
+      document.body.style.overflow = '';
+    }
+
+    document.getElementById('lightboxClose').addEventListener('click', closeLightbox);
+    document.getElementById('lightboxPrev').addEventListener('click', function() {
+      _lbIndex = (_lbIndex - 1 + _lbPhotos.length) % _lbPhotos.length;
+      updateLightbox();
+    });
+    document.getElementById('lightboxNext').addEventListener('click', function() {
+      _lbIndex = (_lbIndex + 1) % _lbPhotos.length;
+      updateLightbox();
+    });
+    document.getElementById('lightbox').addEventListener('click', function(e) {
+      if (e.target === document.getElementById('lightbox')) closeLightbox();
+    });
+    document.addEventListener('keydown', function(e) {
+      if (!document.getElementById('lightbox').classList.contains('open')) return;
+      if (e.key === 'Escape')     closeLightbox();
+      if (e.key === 'ArrowLeft')  { _lbIndex = (_lbIndex - 1 + _lbPhotos.length) % _lbPhotos.length; updateLightbox(); }
+      if (e.key === 'ArrowRight') { _lbIndex = (_lbIndex + 1) % _lbPhotos.length; updateLightbox(); }
+    });
+
+    // ── CSV parser ─────────────────────────────────────────────────────────
+    function parseCSV(csv) {
+      var lines   = csv.trim().split('\n');
+      var headers = lines[0].split(',').map(function(h){ return h.trim().replace(/^"|"$/g, ''); });
+      var result  = [];
+      for (var r = 1; r < lines.length; r++) {
+        var line     = lines[r];
+        var values   = [];
+        var current  = '';
+        var inQuotes = false;
+        for (var c = 0; c < line.length; c++) {
+          if (line[c] === '"') { inQuotes = !inQuotes; }
+          else if (line[c] === ',' && !inQuotes) { values.push(current.trim()); current = ''; }
+          else { current += line[c]; }
+        }
+        values.push(current.trim());
+        var obj = {};
+        for (var h = 0; h < headers.length; h++) {
+          obj[headers[h]] = (values[h] || '').replace(/^"|"$/g, '');
+        }
+        if (obj.participants)  obj.participants  = obj.participants.split('|').map(function(p){ return p.trim(); }).filter(Boolean);
+        if (obj.photos)        obj.photos        = obj.photos.split('|').map(function(p){ return p.trim(); }).filter(Boolean);
+        if (obj.photoCaptions) obj.photoCaptions = obj.photoCaptions.split('|').map(function(p){ return p.trim(); });
+        result.push(obj);
+      }
+      return result;
+    }
+
+    // ── Init ───────────────────────────────────────────────────────────────
+    function init() {
+      var data = STATIC_DATA;
+
+      if (USE_GOOGLE_SHEET && GOOGLE_SHEET_CSV_URL !== 'YOUR_GOOGLE_SHEET_CSV_URL_HERE') {
+        fetch(GOOGLE_SHEET_CSV_URL)
+          .then(function(res) { return res.text(); })
+          .then(function(text) {
+            data = parseCSV(text);
+            _allData = data;
+            renderOrganisers();
+            renderHOF(data);
+            renderCompPages(data);
+            observeFadeIns();
+          })
+          .catch(function(err) {
+            console.warn('Could not load Google Sheet, falling back to static data.', err);
+            _allData = data;
+            renderOrganisers();
+            renderHOF(data);
+            renderCompPages(data);
+            observeFadeIns();
+          });
+      } else {
+        _allData = data;
+        renderOrganisers();
+        renderHOF(data);
+        renderCompPages(data);
+        observeFadeIns();
+      }
+    }
+
+    init();
+  </script>
+</body>
+</html>
