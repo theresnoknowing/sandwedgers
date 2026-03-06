@@ -1180,6 +1180,10 @@
       }
     }
 
+    window.onbeforeunload = function() {
+      window.scrollTo(0, 0);
+    };
+
     init();
   </script>
 </body>
