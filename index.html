@@ -43,14 +43,17 @@
       --transition:  all 0.35s cubic-bezier(0.4,0,0.2,1);
     }
 
-    html { scroll-behavior: smooth; background: #1a3a2a; overscroll-behaviour: none; overscroll-behaviour-y: none; }
+    html { scroll-behavior: smooth; background: #1a3a2a; overscroll-behaviour: none; overscroll-behaviour-y: none; height: 100%; }
 
     body {
       font-family: 'DM Sans', sans-serif;
-      background: var(--cream);
+      background: #1a3a2a;
       color: var(--text-dark);
       overflow-x: hidden;
       overscroll-behavior: none;
+      overscroll-behavior-y: none;
+      touch-action: pan-x pan-y;
+      -webkit-overflow-scrolling: auto;
     }
 
     /* ── NAV ── */
