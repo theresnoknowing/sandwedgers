@@ -161,7 +161,6 @@
     }
     .hero-bg {
       position: absolute; inset: 0;
-      background-image: url('https://i.imgur.com/rqjfNjk.jpeg');
       background-size: cover;
       background-position: center;
       opacity: 1;
@@ -879,7 +878,7 @@
     }
 
     // ── Set images ─────────────────────────────────────────────────────────
-    // Hero image set directly in CSS
+    document.getElementById('heroBg').style.backgroundImage = "url('" + HERO_IMAGE_URL + "')";
     document.getElementById('purposeImg').src = PURPOSE_IMAGE_URL;
     document.getElementById('footerYear').textContent = new Date().getFullYear();
 
