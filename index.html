@@ -1147,12 +1147,35 @@
     document.getElementById('lightbox').addEventListener('click', function(e) {
       if (e.target === document.getElementById('lightbox')) closeLightbox();
     });
+    
     document.addEventListener('keydown', function(e) {
-      if (!document.getElementById('lightbox').classList.contains('open')) return;
-      if (e.key === 'Escape')     closeLightbox();
-      if (e.key === 'ArrowLeft')  { _lbIndex = (_lbIndex - 1 + _lbPhotos.length) % _lbPhotos.length; updateLightbox(); }
-      if (e.key === 'ArrowRight') { _lbIndex = (_lbIndex + 1) % _lbPhotos.length; updateLightbox(); }
-    });
+      if (!document.getElementById('lightbox').classList.contains('open')) return;
+      if (e.key === 'Escape')     closeLightbox();
+      if (e.key === 'ArrowLeft')  { _lbIndex = (_lbIndex - 1 + _lbPhotos.length) % _lbPhotos.length; updateLightbox(); }
+      if (e.key === 'ArrowRight') { _lbIndex = (_lbIndex + 1) % _lbPhotos.length; updateLightbox(); }
+    });
+
+    // ── Touch swipe for lightbox ───────────────────────────────────────────
+    var _touchStartX = 0;
+    var _touchEndX   = 0;
+
+    document.getElementById('lightbox').addEventListener('touchstart', function(e) {
+      _touchStartX = e.changedTouches[0].screenX;
+    }, { passive: true });
+
+    document.getElementById('lightbox').addEventListener('touchend', function(e) {
+      _touchEndX = e.changedTouches[0].screenX;
+      var diff = _touchStartX - _touchEndX;
+      if (Math.abs(diff) < 50) return; // ignore small movements
+      if (diff > 0) {
+        // swiped left — go to next
+        _lbIndex = (_lbIndex + 1) % _lbPhotos.length;
+      } else {
+        // swiped right — go to previous
+        _lbIndex = (_lbIndex - 1 + _lbPhotos.length) % _lbPhotos.length;
+      }
+      updateLightbox();
+    }, { passive: true });
 
     // ── CSV parser ─────────────────────────────────────────────────────────
     function parseCSV(csv) {
