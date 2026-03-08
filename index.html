@@ -1066,16 +1066,43 @@
       container.innerHTML = allHTML;
     }
 
-    // ── Open / Close competition pages ─────────────────────────────────────
-    function openCompPage(index) {
-      document.getElementById('compPage' + index).classList.add('active');
-      document.body.style.overflow = 'hidden';
-    }
+    // ── Open / Close competition pages ─────────────────────────────────────
+    function openCompPage(index) {
+      document.getElementById('compPage' + index).classList.add('active');
+      document.body.style.overflow = 'hidden';
+      var year = _allData[index] && _allData[index].year ? _allData[index].year : index;
+      history.pushState({ compIndex: index }, '', '#' + year);
+    }
 
-    function closeCompPage(index) {
-      document.getElementById('compPage' + index).classList.remove('active');
-      document.body.style.overflow = '';
-    }
+    function closeCompPage(index) {
+      document.getElementById('compPage' + index).classList.remove('active');
+      document.body.style.overflow = '';
+      history.pushState(null, '', window.location.pathname);
+    }
+
+    // ── Handle browser back/forward buttons ────────────────────────────────
+    window.addEventListener('popstate', function(e) {
+      for (var i = 0; i < _allData.length; i++) {
+        document.getElementById('compPage' + i) && document.getElementById('compPage' + i).classList.remove('active');
+      }
+      document.body.style.overflow = '';
+      if (e.state && e.state.compIndex !== undefined) {
+        document.getElementById('compPage' + e.state.compIndex).classList.add('active');
+        document.body.style.overflow = 'hidden';
+      }
+    });
+
+    // ── Open comp page from URL hash on load ───────────────────────────────
+    function checkHashOnLoad() {
+      var hash = window.location.hash.replace('#', '');
+      if (!hash) return;
+      for (var i = 0; i < _allData.length; i++) {
+        if (String(_allData[i].year) === hash) {
+          openCompPage(i);
+          return;
+        }
+      }
+    }
 
     // ── Lightbox ───────────────────────────────────────────────────────────
     var _lbPhotos   = [];
@@ -1159,7 +1186,7 @@
       var data = STATIC_DATA;
 
       if (USE_GOOGLE_SHEET && GOOGLE_SHEET_CSV_URL !== 'YOUR_GOOGLE_SHEET_CSV_URL_HERE') {
-        fetch(GOOGLE_SHEET_CSV_URL)
+        return fetch(GOOGLE_SHEET_CSV_URL)
           .then(function(res) { return res.text(); })
           .then(function(text) {
             data = parseCSV(text);
@@ -1183,10 +1210,13 @@
         renderHOF(data);
         renderCompPages(data);
         observeFadeIns();
+        return Promise.resolve();
       }
     }
     
-    init();
+    init().then(function() {
+      checkHashOnLoad();
+    });
   </script>
 </body>
 </html>
