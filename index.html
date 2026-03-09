@@ -1324,13 +1324,24 @@
 
       var wasPinching = false;
 
+      img.addEventListener('touchstart', function(e) {
+        if (e.touches.length === 2) {
+          wasPinching = true;
+        }
+      }, { passive: true });
+
       img.addEventListener('touchend', function(e) {
-        if (isPinching || wasPinching) {
+        if (wasPinching) {
           e.stopPropagation();
-          wasPinching = false;
+          if (e.touches.length === 0) wasPinching = false;
         }
         if (e.touches.length < 2) isPinching = false;
         if (scale < 1.05) resetTransform();
+      });
+
+      img.addEventListener('touchcancel', function() {
+        wasPinching = false;
+        isPinching  = false;
       });
 
       // Double-tap to reset zoom
