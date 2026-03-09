@@ -1322,10 +1322,19 @@
         }
       }, { passive: false });
 
-      img.addEventListener('touchend', function(e) {
-        if (e.touches.length < 2) isPinching = false;
-        if (scale < 1.05) resetTransform();
-      });
+      img.addEventListener('touchend', function(e) {
+        if (e.touches.length < 2) {
+          isPinching = false;
+          e.stopPropagation();
+        }
+        if (scale < 1.05) resetTransform();
+      });
+
+      img.addEventListener('touchstart', function(e) {
+        if (e.touches.length === 2) {
+          e.stopPropagation();
+        }
+      }, { passive: true });
 
       // Double-tap to reset zoom
       var lastTap = 0;
